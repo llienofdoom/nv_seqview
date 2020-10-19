@@ -23,15 +23,23 @@ def draw(frame_list, audio_list, fps):
     if FRAME == 0:
         FRAME = FRAMES
 
-    text_str   = 'file name : %s' % input_file
-    text_file  = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
-    text_str   = 'frame     : %04d' % FRAME
-    text_frame = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
-    text_str   = 'framerate : %d' % clock.get_fps()
-    text_fps   = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
+    text_file_str = 'file name : %s' % input_file
+    text_file_BLK = font.render(text_file_str, True, (0, 0, 0))
+    text_file     = font.render(text_file_str, True, (255, 255, 255))
+    text_frame_str = 'frame     : %04d' % FRAME
+    text_frame_BLK = font.render(text_frame_str, True, (0, 0, 0))
+    text_frame     = font.render(text_frame_str, True, (255, 255, 255))
+    text_fps_str = 'framerate : %d' % clock.get_fps()
+    text_fps_BLK = font.render(text_fps_str, True, (0, 0, 0))
+    text_fps     = font.render(text_fps_str, True, (255, 255, 255))
     if HAS_AUDIO:
         audio_list[FRAME - 1].play()
     gameDisplay.blit(pygame.transform.smoothscale(frame_list[FRAME - 1], (W, H)), (0,0))
+    
+    gameDisplay.blit(text_file_BLK, (12,12))
+    gameDisplay.blit(text_frame_BLK, (12,36))
+    gameDisplay.blit(text_fps_BLK, (12,58))
+    
     gameDisplay.blit(text_file, (10,10))
     gameDisplay.blit(text_frame, (10,34))
     gameDisplay.blit(text_fps, (10,56))
@@ -85,7 +93,7 @@ if len(sys.argv) > 1:
             start = i
             frm = '%04d' % a
             out = tmp_dir + os.sep + os.path.basename(input_file)[:-3] + frm +  '.wav'
-            out_stream = ffmpeg.output(audio_stream, out, ss=start, t=(AUD_SLICE*1.5))
+            out_stream = ffmpeg.output(audio_stream, out, ss=start, t=(AUD_SLICE*2.0))
             ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
             a += 1
         print('Done! Starting playback...')
