@@ -157,6 +157,9 @@ if len(sys.argv) > 1:
                     PAUSED = True
                     FRAME += 1
                     draw(frame_array, aud_array, FPS)
+                if event.key == pygame.K_HOME:
+                    FRAME = 1
+                    draw(frame_array, aud_array, FPS)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_COMMA]:
             PAUSED = True
@@ -169,11 +172,11 @@ if len(sys.argv) > 1:
         if keys[pygame.K_LEFTBRACKET]:
             PAUSED = True
             FRAME -= 1
-            draw(frame_array, aud_array, FPS * 3)
+            draw(frame_array, aud_array, FPS * 2)
         if keys[pygame.K_RIGHTBRACKET]:
             PAUSED = True
             FRAME += 1
-            draw(frame_array, aud_array, FPS * 3)
+            draw(frame_array, aud_array, FPS * 2)
         # DO THE THING! ###################################
         if not PAUSED:
             if not BACKWD:
