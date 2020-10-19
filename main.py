@@ -14,6 +14,8 @@ def draw(frame_list, audio_list, fps):
     global FRAMES
     global FRAME
     global input_file
+    global W
+    global H
 
     if FRAME > FRAMES:
         FRAME = 1
@@ -27,10 +29,10 @@ def draw(frame_list, audio_list, fps):
     text_str   = 'framerate : %d' % clock.get_fps()
     text_fps   = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
     audio_list[FRAME - 1].play()
-    gameDisplay.blit(frame_list[FRAME - 1], (0,0))
+    gameDisplay.blit(pygame.transform.smoothscale(frame_list[FRAME - 1], (W, H)), (0,0))
     gameDisplay.blit(text_file, (10,10))
-    gameDisplay.blit(text_frame, (10,25))
-    gameDisplay.blit(text_fps, (10,40))
+    gameDisplay.blit(text_frame, (10,34))
+    gameDisplay.blit(text_fps, (10,56))
     pygame.display.update()
     clock.tick(fps)
 
@@ -102,9 +104,11 @@ if len(sys.argv) > 1:
 
     # display sequence ####################################
     # font = pygame.font.Font('freesansbold.ttf', 10)
-    font = pygame.font.Font('fonts/SpaceMono-Regular.ttf', 10)
-    gameDisplay = pygame.display.set_mode((IM_W,IM_H))
+    font = pygame.font.Font('fonts/SpaceMono-Regular.ttf', 12)
+    # gameDisplay = pygame.display.set_mode((IM_W,IM_H), pygame.HWSURFACE | pygame.DOUBLEBUF)
+    gameDisplay = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
     pygame.display.set_caption('nv_seqview')
+    W, H = pygame.display.get_surface().get_size()
     CLOSED = False
     PAUSED = False
     BACKWD = False
