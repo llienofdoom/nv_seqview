@@ -1,8 +1,9 @@
 #!/bin/bash
 
 root_folder=$(dirname "$0")
-source $root_folder/venv_mac/bin/activate
+cd $root_folder
+source venv_mac/bin/activate
 
-python $root_folder/main.py $1
+python main.py $1
 
-read -rsp $'Finished. Press enter to continue...\n'
+# read -rsp $'Finished. Press enter to continue...\n'
