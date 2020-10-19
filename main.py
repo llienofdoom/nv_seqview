@@ -16,6 +16,7 @@ def draw(frame_list, audio_list, fps):
     global input_file
     global W
     global H
+    global HAS_AUDIO
 
     if FRAME > FRAMES:
         FRAME = 1
@@ -28,7 +29,8 @@ def draw(frame_list, audio_list, fps):
     text_frame = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
     text_str   = 'framerate : %d' % clock.get_fps()
     text_fps   = font.render(text_str, True, (255, 255, 255), (0, 0, 0))
-    audio_list[FRAME - 1].play()
+    if HAS_AUDIO:
+        audio_list[FRAME - 1].play()
     gameDisplay.blit(pygame.transform.smoothscale(frame_list[FRAME - 1], (W, H)), (0,0))
     gameDisplay.blit(text_file, (10,10))
     gameDisplay.blit(text_frame, (10,34))
@@ -53,14 +55,17 @@ if len(sys.argv) > 1:
     FRAMES    = 0
     AUD_DUR   = 0
     AUD_SLICE = 0.0
+    HAS_AUDIO = False
     for stream in info['streams']:
         if stream['codec_type'] == 'video':
             IM_W = int(stream['coded_width' ])
             IM_H = int(stream['coded_height'])
-            FPS  = int(stream['codec_time_base'].split('/')[1])
+            # FPS  = int(stream['codec_time_base'].split('/')[1])
+            FPS  = int(stream['r_frame_rate'].split('/')[0])
             FRAMES = int(stream['nb_frames'])
     for stream in info['streams']:        
         if stream['codec_type'] == 'audio':
+            HAS_AUDIO = True
             AUD_DUR = float(stream['duration'])
             AUD_SLICE = AUD_DUR / float(FRAMES)
     # print('STATS = w:{} - h:{} - fps:{} - frames:{} - aud:{} - slice:{}'.format(IM_W, IM_H, FPS, FRAMES, AUD_DUR, AUD_SLICE))
@@ -72,17 +77,18 @@ if len(sys.argv) > 1:
     out = tmp_dir + os.sep + os.path.basename(input_file)[:-4] + '.%04d.jpg'
     out_stream = ffmpeg.output(video_stream, out, **{'qscale:v': 2})
     ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
-    print('Done! Exporting audio...')
-
-    a = 1
-    for i in arange(0.0, AUD_DUR, AUD_SLICE):
-        start = i
-        frm = '%04d' % a
-        out = tmp_dir + os.sep + os.path.basename(input_file)[:-3] + frm +  '.wav'
-        out_stream = ffmpeg.output(audio_stream, out, ss=start, t=AUD_SLICE)
-        ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
-        a += 1
-    print('Done! Starting playback...')
+    
+    if HAS_AUDIO:
+        print('Done! Exporting audio...')
+        a = 1
+        for i in arange(0.0, AUD_DUR, AUD_SLICE):
+            start = i
+            frm = '%04d' % a
+            out = tmp_dir + os.sep + os.path.basename(input_file)[:-3] + frm +  '.wav'
+            out_stream = ffmpeg.output(audio_stream, out, ss=start, t=AUD_SLICE)
+            ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
+            a += 1
+        print('Done! Starting playback...')
 
     # preload #############################################
     pygame.init()
@@ -94,13 +100,14 @@ if len(sys.argv) > 1:
         frame_array.append(pygame.image.load(img_path))
     print('Done!')
 
-    print('Preloading audio...')
     aud_array = []
-    for i in range(FRAMES):
-        aud_path  = tmp_dir + os.sep + os.path.basename(input_file)[:-4]
-        aud_path += '.%04d.wav' % (i+1)
-        aud_array.append(pygame.mixer.Sound(aud_path))
-    print('Done!')
+    if HAS_AUDIO:
+        print('Preloading audio...')
+        for i in range(FRAMES):
+            aud_path  = tmp_dir + os.sep + os.path.basename(input_file)[:-4]
+            aud_path += '.%04d.wav' % (i+1)
+            aud_array.append(pygame.mixer.Sound(aud_path))
+        print('Done!')
 
     # display sequence ####################################
     # font = pygame.font.Font('freesansbold.ttf', 10)
