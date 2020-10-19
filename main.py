@@ -3,6 +3,8 @@
 import os
 import sys
 import shutil
+import time
+import tempfile
 import ffmpeg
 import pygame
 from numpy import arange
@@ -37,7 +39,8 @@ if len(sys.argv) > 1:
     # prep input ffmpeg ###################################
     input_file   = os.path.abspath(sys.argv[1])
     input_folder = os.path.dirname(input_file)
-    tmp_dir      = input_folder + os.sep + '_tmp'
+    # tmp_dir      = input_folder + os.sep + '_tmp'
+    tmp_dir      = tempfile.gettempdir() + os.sep + 'nv_seqview_' + str(time.time())
     if not os.path.exists(tmp_dir):
         os.mkdir(tmp_dir)
 
@@ -161,8 +164,9 @@ if len(sys.argv) > 1:
             draw(frame_array, aud_array, FPS)
     print('Done!')
     # cleanup
-    print('Cleaning up...')
-    shutil.rmtree(tmp_dir)
+    # print('Cleaning up...')
+    # time.sleep(5)
+    # shutil.rmtree(tmp_dir)
     print('Done! Exiting.\n\n')
 else:
     print('Add a file, moron...\n\n')
