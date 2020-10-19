@@ -77,7 +77,7 @@ if len(sys.argv) > 1:
     out = tmp_dir + os.sep + os.path.basename(input_file)[:-4] + '.%04d.jpg'
     out_stream = ffmpeg.output(video_stream, out, **{'qscale:v': 2})
     ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
-    
+
     if HAS_AUDIO:
         print('Done! Exporting audio...')
         a = 1
@@ -85,7 +85,7 @@ if len(sys.argv) > 1:
             start = i
             frm = '%04d' % a
             out = tmp_dir + os.sep + os.path.basename(input_file)[:-3] + frm +  '.wav'
-            out_stream = ffmpeg.output(audio_stream, out, ss=start, t=AUD_SLICE)
+            out_stream = ffmpeg.output(audio_stream, out, ss=start, t=(AUD_SLICE*1.5))
             ffmpeg.run(out_stream, quiet=True, overwrite_output=True)
             a += 1
         print('Done! Starting playback...')
@@ -175,9 +175,9 @@ if len(sys.argv) > 1:
             draw(frame_array, aud_array, FPS)
     print('Done!')
     # cleanup
-    # print('Cleaning up...')
+    print('Cleaning up...')
     # time.sleep(5)
-    # shutil.rmtree(tmp_dir)
+    shutil.rmtree(tmp_dir)
     print('Done! Exiting.\n\n')
 else:
     print('Add a file, moron...\n\n')
